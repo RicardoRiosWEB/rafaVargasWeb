@@ -1,56 +1,93 @@
 import Link from "next/link";
-import Image from "next/image";
-import Logo from "../../../public/logo.svg";
+import Navbar from "../_components/Navbar";
+import HeroBgCarousel from "../_components/HeroBgCarousel";
+
 import rafacliente from "../../../public/InspiracionLandingRafaCliente.webp";
+import barbaCerca from "../../../public/LandingBarberia.webp";
+import vistaBarbers from "../../../public/VistaBarberos.webp";
 
 export default function HeroSection() {
   return (
-    <section className="section flex items-center w-full">
-      <main className="section-inner relative w-full flex flex-col items-center overflow-hidden min-h-screen">
-
-        {/* Fondo */}
-        <Image
-          src={rafacliente}
-          alt="Barber background"
-          fill
-          priority
-          className="object-cover object-center z-0 max-h-screen"
+    <section className="section w-full">
+      <main className="section-inner relative w-full min-h-screen overflow-hidden">
+        {/* Fondo (carousel vertical) */}
+        <HeroBgCarousel
+          images={[rafacliente, barbaCerca, vistaBarbers]}
+          intervalMs={4500}
+          durationMs={900}
         />
 
-        {/* Oscurecimiento general (encima de la imagen) */}
-        <div className="absolute inset-0 z-10 bg-enfasis-800/45" />
+        {/* Oscurecimiento general */}
+        <div className="absolute inset-0 z-10 bg-enfasis-800/37" />
 
-        {/* Gradiente/vignette (encima del oscurecimiento) */}
-        <div className="h-50 w-full absolute inset-0 z-20 bg-gradient-to-b from-enfasis-800/90 via-60% via-gradientvia-600/20 to-enfasis-800/0" />
-
-        {/* Contenido (por encima de TODO lo anterior) */}
-        <div className="relative z-20 w-full flex flex-col items-center space-y-12">
-          <header className="w-full flex flex-col items-center">
-            <div className="flex items-center relative bottom-4">
-              <Image src={Logo} alt="logo" width={200} />
-            </div>
-
-            <nav className="flex items-center relative bottom-16 space-x-3">
-              <Link href="/" className="type-body text-logo-100">Cortes</Link>
-              <Link href="/" className="type-body text-logo-100">Conoce</Link>
-              <Link href="/" className="type-body text-logo-100">Contacta</Link>
-            </nav>
-          </header>
-
-          <h3 className="type-title-lg text-center">
-            EL DETALLE <br /> MARCA LA <br />
-            <span className="text-logo-100">DIFERENCIA</span>
-          </h3>
-
-          <Link href="/" className="border-7 border-logo-100 px-8 py-4 type-cta">
-            Reservar
-          </Link>
+        {/* Navbar */}
+        <div className="absolute top-0 left-0 w-full z-30">
+          <Navbar />
         </div>
 
+        {/* Contenido */}
+        <div className="relative z-20 h-screen w-full">
+          <h3 className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 type-title-lg text-center ">
+            EL DETALLE <br /> MARCA LA <br />
+            <span className="text-logo-100 ">DIFERENCIA</span>
+          </h3>
+
+          <Link
+            href="https://booksy.com/es-es/dl/show-business/168633?utm_medium=c2c_referral"
+            className="
+              absolute left-1/2 bottom-[19vh] -translate-x-1/2
+              border-[5px] border-logo-100 px-6 py-3 type-cta
+              z-40
+              transition-transform duration-300 ease-out
+              hover:scale-[1.06] active:scale-[0.98]
+              group
+            "
+          >
+            <span className="relative inline-block pb-1">
+              Reservar
+              <span
+                aria-hidden="true"
+                className="
+                  absolute left-0 bottom-0 block h-1 w-full bg-logo-100
+                  origin-left scale-x-0
+                  transition-transform duration-300 ease-out
+                  [@media(hover:hover)]:group-hover:scale-x-100
+                  [@media(hover:none)]:group-active:scale-x-100
+                "
+              />
+            </span>
+          </Link>
+        </div>
       </main>
     </section>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 import Link from "next/link";

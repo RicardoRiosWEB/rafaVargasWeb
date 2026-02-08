@@ -4,6 +4,7 @@ import HeroSection from "./_sections/hero-section";
 import WhyusSection from "./_sections/whyus-section";
 import ReviewsSection from "./_sections/reviews-section";
 import LocationSection from "./_sections/location-section";
+import ContactSection from "./_sections/contact-section";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <WhyusSection/>
       <ReviewsSection/>
       <LocationSection/>
+      <ContactSection/>
     </>
   );
 }

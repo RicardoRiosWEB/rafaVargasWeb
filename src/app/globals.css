@@ -15,8 +15,13 @@
   --color-gradientvia-600:#934B18;
   --color-fondo-500: #2A2A2E;
 
+  /* ✅ Sombras personalizadas (se usan con class="shadow-card", "shadow-float", etc.) */
+  --shadow-card: 0 14px 40px -22px color-mix(in oklab, var(--color-enfasis-800) 65%, transparent);
+  --shadow-float: 0 22px 70px -40px color-mix(in oklab, var(--color-enfasis-800) 75%, transparent);
+  --shadow-soft: 0 8px 18px -12px color-mix(in oklab, var(--color-enfasis-800) 55%, transparent);
+
   /* Stacks */
-  --font-tittle: var(--font-title), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+  --font-title: var(--font-title), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 
   --font-sans-stack: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
@@ -102,7 +107,7 @@
 }
 
 @utility type-title-lg {
-  font-family: var(--font-tittle);
+  font-family: var(--font-title);
   font-size: var(--tama-h11);
   font-weight:500;
   line-height: var(--leading-tight);
@@ -111,7 +116,7 @@
 }
 
 @utility type-title-md {
-  font-family: var(--font-tittle);
+  font-family: var(--font-title);
   font-size: var(--tama-h11);
   font-weight:400;
   line-height: var(--leading-compress);
@@ -125,7 +130,7 @@
   letter-spacing: var(--track-tight);
 }
 @utility type-label {
-  font: var(--type-tittle);
+  font: var(--type-title);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
