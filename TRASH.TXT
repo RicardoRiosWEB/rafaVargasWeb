@@ -1,893 +1,190 @@
-// src/app/_components/ReviewsCarousel.tsx
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
+import Image, { type StaticImageData } from "next/image";
 
-type Review = {
-  name: string;
-  text: string;
-  rating?: 1 | 2 | 3 | 4 | 5;
-  meta?: string;
+export type BeforeAfterItem = {
+  id: string;
+  before: StaticImageData;
+  after: StaticImageData;
+  altBefore?: string;
+  altAfter?: string;
+  label?: string; // nombre / tipo de corte / etc.
 };
 
-function Star({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className={`size-4 ${filled ? "text-logo-100" : "text-logo-100/25"}`}
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8 1.75a.75.75 0 0 1 .692.462l1.41 3.393 3.664.293a.75.75 0 0 1 .428 1.317l-2.791 2.39.853 3.575a.75.75 0 0 1-1.12.814L7.998 12.08l-3.135 1.915a.75.75 0 0 1-1.12-.814l.852-3.574-2.79-2.39a.75.75 0 0 1 .427-1.318l3.663-.293 1.41-3.393A.75.75 0 0 1 8 1.75Z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-function ReviewCard({ review }: { review: Review }) {
-  const rating = review.rating ?? 5;
-
-  return (
-    <article
-      className="
-        h-full w-full
-
-        bg-white/5
-        backdrop-blur
-        
-        p-5 sm:p-6
-      "
-    >
-      {/* Estrellas centradas */}
-      <div className="flex items-center justify-center gap-1" aria-label={`${rating} de 5`}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} filled={i < rating} />
-        ))}
-      </div>
-
-      {/* Nombre arriba del texto */}
-      <div className="mt-4 text-center">
-        <p className="font-title text-xl sm:text-2xl text-white">{review.name}</p>
-        {review.meta ? <p className="mt-1 text-sm text-white/50">{review.meta}</p> : null}
-      </div>
-
-      {/* Texto reseña */}
-      <p className="mt-4 font-title text-base sm:text-[17px] leading-relaxed text-white/85 text-center">
-        <span className="text-logo-100/90">“</span>
-        {review.text}
-        <span className="text-logo-100/90">”</span>
-      </p>
-    </article>
-  );
-}
-
-
-
-export default function ReviewsCarousel({
-  reviews,
-  title = "",
-  subtitle = "",
-  autoPlayMs = 4500,
+export default function BeforeAfterCarousel({
+  items,
+  className = "",
 }: {
-  reviews: Review[];
-  title?: string;
-  subtitle?: string;
-  autoPlayMs?: number;
+  items: BeforeAfterItem[];
+  className?: string;
 }) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToIndex = (idx: number) => {
-    const el = itemRefs.current[idx];
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  const [showAfterById, setShowAfterById] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(items.map((it) => [it.id, false]))
+  );
+
+  const normalizedState = useMemo(() => {
+    const base = { ...showAfterById };
+    for (const it of items) if (!(it.id in base)) base[it.id] = false;
+    return base;
+  }, [items, showAfterById]);
+
+  const toggle = (id: string) => {
+    setShowAfterById((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Detecta el slide activo con IntersectionObserver (robusto con scroll-snap)
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        // coge el más visible dentro del carril
-        let best = { idx: activeIndex, ratio: 0 };
-        for (const e of entries) {
-          const idx = Number((e.target as HTMLElement).dataset.idx ?? "0");
-          if (e.isIntersecting && e.intersectionRatio > best.ratio) {
-            best = { idx, ratio: e.intersectionRatio };
-          }
-        }
-        if (best.ratio > 0) setActiveIndex(best.idx);
-      },
-      { root: track, threshold: [0.5, 0.6, 0.7, 0.8] }
-    );
-
-    itemRefs.current.forEach((node) => node && io.observe(node));
-    return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reviews.length]);
-
-  // Autoplay + pausa por hover/touch + pausa si la pestaña no está visible
-  useEffect(() => {
-    if (paused) return;
-    if (reviews.length <= 1) return;
-
-    let t: number | null = null;
-
-    const tick = () => {
-      const next = (activeIndex + 1) % reviews.length;
-      scrollToIndex(next);
-      t = window.setTimeout(tick, autoPlayMs);
-    };
-
-    t = window.setTimeout(tick, autoPlayMs);
-
-    const onVis = () => {
-      if (document.hidden) setPaused(true);
-    };
-    document.addEventListener("visibilitychange", onVis);
-
-    return () => {
-      if (t) window.clearTimeout(t);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, [activeIndex, autoPlayMs, paused, reviews.length]);
-
-  const pause = () => setPaused(true);
-  const resume = () => setPaused(false);
-
-  return (
-    <section className="section py-10 bg-[var(--background)]">
-      <div className="section-inner">
-        <div className="flex items-end justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="font-title text-2xl sm:text-3xl text-white">{title}</h2>
-            <p className="text-white/60">{subtitle}</p>
-          </div>
-
-          {/* Dots */}
-          <div className="hidden sm:flex items-center gap-2">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                className={`
-                  size-2.5 rounded-full transition
-                  ${i === activeIndex ? "bg-logo-100" : "bg-white/15 hover:bg-white/30"}
-                `}
-                aria-label={`Ir a reseña ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mt-6">
-          {/* Fades laterales para “premium” + fondo del body */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[var(--background)] to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--background)] to-transparent z-10" />
-
-          <div
-            ref={trackRef}
-            // Pausa: hover (desktop) + tocar/arrastrar (móvil)
-            onMouseEnter={pause}
-            onMouseLeave={resume}
-            onPointerDown={pause}
-            onPointerUp={resume}
-            onPointerCancel={resume}
-            className="
-              flex gap-4
-              overflow-x-auto scroll-smooth
-              snap-x snap-mandatory
-              px-[7vw] sm:px-[10vw]  /* <- clave: centra y deja peek */
-              pb-2
-              [-ms-overflow-style:none] [scrollbar-width:none]
-              [&::-webkit-scrollbar]:hidden
-            "
-            style={{
-              // mejora el centrado del snap con padding
-              scrollPaddingLeft: "10vw",
-              scrollPaddingRight: "10vw",
-            }}
-          >
-            {reviews.map((r, idx) => (
-              <div
-                key={`${r.name}-${idx}`}
-                data-idx={idx}
-                ref={(node) => {
-                  itemRefs.current[idx] = node;
-                }}
-                className="
-                  snap-center
-                  shrink-0
-                  w-[86%] sm:w-[72%] md:w-[56%] lg:w-[44%]  /* <- 1 tarjeta + peek */
-                "
-              >
-                <ReviewCard review={r} />
-              </div>
-            ))}
-          </div>
-
-          {/* Dots móvil */}
-          <div className="mt-4 flex sm:hidden items-center justify-center gap-2">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                className={`
-                  h-2 rounded-full transition
-                  ${i === activeIndex ? "w-6 bg-logo-100" : "w-2 bg-white/15"}
-                `}
-                aria-label={`Ir a reseña ${i + 1}`}
-              />
-            ))}
-          </div>
-          
-        </div>
-      </div>
-    </section>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// src/app/_components/ReviewsCarousel.tsx
-"use client";
-
-import React, { useEffect, useRef, useState } from "react";
-
-type Review = {
-  name: string;
-  text: string;
-  rating?: 1 | 2 | 3 | 4 | 5;
-  meta?: string;
-};
-
-function Star({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className={`size-4 ${filled ? "text-logo-100" : "text-logo-100/25"}`}
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8 1.75a.75.75 0 0 1 .692.462l1.41 3.393 3.664.293a.75.75 0 0 1 .428 1.317l-2.791 2.39.853 3.575a.75.75 0 0 1-1.12.814L7.998 12.08l-3.135 1.915a.75.75 0 0 1-1.12-.814l.852-3.574-2.79-2.39a.75.75 0 0 1 .427-1.318l3.663-.293 1.41-3.393A.75.75 0 0 1 8 1.75Z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function ReviewCard({ review }: { review: Review }) {
-  const rating = review.rating ?? 5;
-
-  return (
-    <article
-      className="
-        h-full w-full
-        bg-white/5
-        backdrop-blur
-        p-5 sm:p-6
-      "
-    >
-      {/* Estrellas centradas */}
-      <div className="flex items-center justify-center gap-1" aria-label={`${rating} de 5`}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} filled={i < rating} />
-        ))}
-      </div>
-
-      {/* Nombre arriba del texto */}
-      <div className="mt-4 text-center">
-        <p className="font-title text-xl sm:text-2xl text-white">{review.name}</p>
-        {review.meta ? <p className="mt-1 text-sm text-white/50">{review.meta}</p> : null}
-      </div>
-
-      {/* Texto reseña */}
-      <p className="mt-4 font-title text-base sm:text-[17px] leading-relaxed text-white/85 text-center">
-        <span className="text-logo-100/90">“</span>
-        {review.text}
-        <span className="text-logo-100/90">”</span>
-      </p>
-    </article>
-  );
-}
-
-export default function ReviewsCarousel({
-  reviews,
-  title = "",
-  subtitle = "",
-  autoPlayMs = 4500,
-}: {
-  reviews: Review[];
-  title?: string;
-  subtitle?: string;
-  autoPlayMs?: number;
-}) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  const scrollToIndex = (idx: number) => {
-    const el = itemRefs.current[idx];
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  };
-
-  // Slide activo (robusto con scroll-snap)
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        let bestIdx = 0;
-        let bestRatio = 0;
-
-        for (const e of entries) {
-          const idx = Number((e.target as HTMLElement).dataset.idx ?? "0");
-          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
-            bestIdx = idx;
-            bestRatio = e.intersectionRatio;
-          }
-        }
-
-        if (bestRatio > 0) setActiveIndex(bestIdx);
-      },
-      { root: track, threshold: [0.5, 0.6, 0.7, 0.8] }
-    );
-
-    itemRefs.current.forEach((node) => node && io.observe(node));
-    return () => io.disconnect();
-  }, [reviews.length]);
-
-  // Autoplay + pause hover/touch + pause si pestaña oculta + reduced motion
-  useEffect(() => {
-    if (paused) return;
-    if (reviews.length <= 1) return;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-
-    if (prefersReducedMotion) return;
-
-    let t: number | null = null;
-
-    const tick = () => {
-      const next = (activeIndex + 1) % reviews.length;
-      scrollToIndex(next);
-      t = window.setTimeout(tick, autoPlayMs);
-    };
-
-    t = window.setTimeout(tick, autoPlayMs);
-
-    const onVis = () => {
-      if (document.hidden) setPaused(true);
-    };
-    document.addEventListener("visibilitychange", onVis);
-
-    return () => {
-      if (t) window.clearTimeout(t);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, [activeIndex, autoPlayMs, paused, reviews.length]);
-
-  const pause = () => setPaused(true);
-  const resume = () => setPaused(false);
-
-  return (
-    <section className="section py-10 bg-[var(--background)]">
-      <div className="section-inner">
-        {(title || subtitle) && (
-          <div className="flex items-end justify-between gap-4">
-            <div className="space-y-1">
-              {title ? <h2 className="font-title text-2xl sm:text-3xl text-white">{title}</h2> : null}
-              {subtitle ? <p className="text-white/60">{subtitle}</p> : null}
-            </div>
-
-            {/* Dots desktop */}
-            <div className="hidden sm:flex items-center gap-2">
-              {reviews.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => scrollToIndex(i)}
-                  className={`
-                    size-2.5 rounded-full transition
-                    ${i === activeIndex ? "bg-logo-100" : "bg-white/15 hover:bg-white/30"}
-                  `}
-                  aria-label={`Ir a reseña ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="relative mt-6">
-          {/* Fades laterales */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[var(--background)] to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--background)] to-transparent z-10" />
-
-          <div
-            ref={trackRef}
-            onMouseEnter={pause}
-            onMouseLeave={resume}
-            onPointerDown={pause}
-            onPointerUp={resume}
-            onPointerCancel={resume}
-            className="
-              flex gap-4
-              overflow-x-auto scroll-smooth
-              snap-x snap-mandatory
-              px-[7vw] sm:px-[10vw]
-              scroll-px-[7vw] sm:scroll-px-[10vw]
-              pb-2
-              touch-pan-x
-              [-ms-overflow-style:none] [scrollbar-width:none]
-              [&::-webkit-scrollbar]:hidden
-            "
-          >
-            {reviews.map((r, idx) => {
-              const isActive = idx === activeIndex;
-
-              return (
-                <div
-                  key={`${r.name}-${idx}`}
-                  data-idx={idx}
-                  ref={(node) => {
-                    itemRefs.current[idx] = node;
-                  }}
-                  className={`
-                    snap-center
-                    shrink-0
-                    w-[86%] sm:w-[72%] md:w-[56%] lg:w-[44%]
-                    transition-transform duration-300 ease-out
-                    ${isActive ? "scale-[1.05]" : "scale-100"}
-                    motion-reduce:transition-none
-                  `}
-                >
-                  <ReviewCard review={r} />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Dots móvil */}
-          <div className="mt-4 flex sm:hidden items-center justify-center gap-2">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                className={`
-                  h-2 rounded-full transition
-                  ${i === activeIndex ? "w-6 bg-logo-100" : "w-2 bg-white/15"}
-                `}
-                aria-label={`Ir a reseña ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// src/app/_components/ReviewsCarousel.tsx
-"use client";
-
-import React, { useEffect, useRef, useState } from "react";
-
-export type Review = {
-  name: string;
-  text: string;
-  rating?: 1 | 2 | 3 | 4 | 5;
-  meta?: string;
-};
-
-function Star({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className={`size-4 ${filled ? "text-logo-100" : "text-logo-100/25"}`}
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8 1.75a.75.75 0 0 1 .692.462l1.41 3.393 3.664.293a.75.75 0 0 1 .428 1.317l-2.791 2.39.853 3.575a.75.75 0 0 1-1.12.814L7.998 12.08l-3.135 1.915a.75.75 0 0 1-1.12-.814l.852-3.574-2.79-2.39a.75.75 0 0 1 .427-1.318l3.663-.293 1.41-3.393A.75.75 0 0 1 8 1.75Z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function ReviewCard({ review }: { review: Review }) {
-  const rating = review.rating ?? 5;
-
-  return (
-    <article
-      className="
-        h-full w-full
-        bg-white/5
-        backdrop-blur
-        p-5 sm:p-6
-      "
-    >
-      <div className="flex items-center justify-center gap-1" aria-label={`${rating} de 5`}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} filled={i < rating} />
-        ))}
-      </div>
-
-      <div className="mt-4 text-center">
-        <p className="font-title text-xl sm:text-2xl text-white">{review.name}</p>
-        {review.meta ? <p className="mt-1 text-sm text-white/50">{review.meta}</p> : null}
-      </div>
-
-      <p className="mt-4 font-title text-base sm:text-[17px] leading-relaxed text-white/85 text-center">
-        <span className="text-logo-100/90">“</span>
-        {review.text}
-        <span className="text-logo-100/90">”</span>
-      </p>
-    </article>
-  );
-}
-
-export default function ReviewsCarousel({
-  reviews,
-  title = "",
-  subtitle = "",
-  autoPlayMs = 4500,
-}: {
-  reviews: Review[];
-  title?: string;
-  subtitle?: string;
-  autoPlayMs?: number;
-}) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-  const [docHidden, setDocHidden] = useState(false);
-
-  // Scroll SOLO horizontal (evita reenfoque vertical)
-  const scrollToIndex = (idx: number) => {
-    const track = trackRef.current;
-    const item = itemRefs.current[idx];
-    if (!track || !item) return;
-
-    const max = track.scrollWidth - track.clientWidth;
-    const target = item.offsetLeft - (track.clientWidth - item.clientWidth) / 2;
-    const clamped = Math.max(0, Math.min(max, target));
-
-    track.scrollTo({ left: clamped, behavior: "smooth" });
-  };
-
-  // Slide activo (para scale + dots)
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        let bestIdx = 0;
-        let bestRatio = 0;
-
-        for (const e of entries) {
-          const idx = Number((e.target as HTMLElement).dataset.idx ?? "0");
-          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
-            bestIdx = idx;
-            bestRatio = e.intersectionRatio;
-          }
-        }
-
-        if (bestRatio > 0) setActiveIndex(bestIdx);
-      },
-      { root: track, threshold: [0.5, 0.6, 0.7, 0.8] }
-    );
-
-    itemRefs.current.forEach((node) => node && io.observe(node));
-    return () => io.disconnect();
-  }, [reviews.length]);
-
-  // Autoplay solo si el carrusel está visible
-  useEffect(() => {
-    const el = sectionRef.current;
+  const scrollByCards = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
     if (!el) return;
 
-    const io = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting), { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  // Tab oculta
-  useEffect(() => {
-    const onVis = () => setDocHidden(document.hidden);
-    document.addEventListener("visibilitychange", onVis);
-    onVis();
-    return () => document.removeEventListener("visibilitychange", onVis);
-  }, []);
-
-  // Autoplay + pause hover/touch + reduced motion + solo visible
-  useEffect(() => {
-    if (paused) return;
-    if (docHidden) return;
-    if (!isInView) return;
-    if (reviews.length <= 1) return;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    if (prefersReducedMotion) return;
-
-    let t: number | null = null;
-
-    const tick = () => {
-      const next = (activeIndex + 1) % reviews.length;
-      scrollToIndex(next);
-      t = window.setTimeout(tick, autoPlayMs);
-    };
-
-    t = window.setTimeout(tick, autoPlayMs);
-
-    return () => {
-      if (t) window.clearTimeout(t);
-    };
-  }, [activeIndex, autoPlayMs, paused, reviews.length, isInView, docHidden]);
-
-  const pause = () => setPaused(true);
-  const resume = () => setPaused(false);
+    const cardWidth = 320; // ancho aprox tarjeta desktop
+    const gap = 16;
+    el.scrollBy({ left: dir * (cardWidth + gap), behavior: "smooth" });
+  };
 
   return (
-    <section ref={sectionRef} className="section py-10 bg-[var(--background)]">
-      <div className="section-inner">
-        {(title || subtitle) && (
-          <div className="flex items-end justify-between gap-4">
-            <div className="space-y-1">
-              {title ? <h2 className="font-title text-2xl sm:text-3xl text-white">{title}</h2> : null}
-              {subtitle ? <p className="text-white/60">{subtitle}</p> : null}
-            </div>
+    <div className={`relative ${className}`}>
+      {/* Flechas (desktop) */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden md:flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => scrollByCards(-1)}
+          className="
+            pointer-events-auto ml-2 inline-flex h-10 w-10 items-center justify-center
+            rounded-full bg-enfasis-800/60 text-white backdrop-blur
+            hover:bg-enfasis-800/75 active:scale-95 transition
+          "
+          aria-label="Anterior"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByCards(1)}
+          className="
+            pointer-events-auto mr-2 inline-flex h-10 w-10 items-center justify-center
+            rounded-full bg-enfasis-800/60 text-white backdrop-blur
+            hover:bg-enfasis-800/75 active:scale-95 transition
+          "
+          aria-label="Siguiente"
+        >
+          ›
+        </button>
+      </div>
 
-            <div className="hidden sm:flex items-center gap-2">
-              {reviews.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => scrollToIndex(i)}
-                  className={`
-                    size-2.5 rounded-full transition
-                    ${i === activeIndex ? "bg-logo-100" : "bg-white/15 hover:bg-white/30"}
-                  `}
-                  aria-label={`Ir a reseña ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Carril */}
+      <div
+        ref={scrollerRef}
+        className="
+          flex gap-4 overflow-x-auto scroll-smooth
+          snap-x snap-mandatory pb-2
+          [-ms-overflow-style:none] [scrollbar-width:none]
+          [&::-webkit-scrollbar]:hidden
+        "
+      >
+        {items.map((it) => {
+          const showAfter = normalizedState[it.id] ?? false;
 
-        <div className="relative mt-6">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[var(--background)] to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--background)] to-transparent z-10" />
-
-          <div
-            ref={trackRef}
-            onMouseEnter={pause}
-            onMouseLeave={resume}
-            onPointerDown={pause}
-            onPointerUp={resume}
-            onPointerCancel={resume}
-            className="
-              flex gap-4
-              overflow-x-auto scroll-smooth
-              snap-x snap-mandatory
-              px-[7vw] sm:px-[10vw]
-              scroll-px-[7vw] sm:scroll-px-[10vw]
-              pb-2
-              touch-pan-x
-              [-ms-overflow-style:none] [scrollbar-width:none]
-              [&::-webkit-scrollbar]:hidden
-            "
-          >
-            {reviews.map((r, idx) => {
-              const isActive = idx === activeIndex;
-
-              return (
+          return (
+            <article
+              key={it.id}
+              className="snap-center shrink-0 w-[280px] sm:w-[320px]"
+            >
+              <button
+                type="button"
+                onClick={() => toggle(it.id)}
+                className="
+                  group relative w-full
+                  rounded-2xl overflow-hidden
+                  bg-enfasis-800
+                  border border-fondo-500/15
+                  shadow-[0_14px_40px_rgba(0,0,0,0.35)]
+                  transition
+                  hover:translate-y-[-2px]
+                  active:scale-[0.99]
+                  focus:outline-none
+                  focus-visible:ring-2 focus-visible:ring-logo-100
+                  focus-visible:ring-offset-2 focus-visible:ring-offset-enfasis-800
+                "
+                aria-pressed={showAfter}
+                aria-label={`Alternar antes y después${it.label ? `: ${it.label}` : ""}`}
+              >
+                {/* Barra superior: VER ANTES (solo cuando showAfter=true) */}
                 <div
-                  key={`${r.name}-${idx}`}
-                  data-idx={idx}
-                  ref={(node) => {
-                    itemRefs.current[idx] = node;
-                  }}
                   className={`
-                    snap-center shrink-0
-                    w-[86%] sm:w-[72%] md:w-[56%] lg:w-[44%]
-                    transition-transform duration-300 ease-out
-                    ${isActive ? "scale-[1.03]" : "scale-100"}
-                    motion-reduce:transition-none
+                    absolute left-0 right-0 top-0 z-20
+                    flex items-center justify-center
+                    py-3
+                    bg-logo-100/95 text-white tracking-wide
+                    transition-transform duration-300
+                    ${showAfter ? "translate-y-0" : "-translate-y-full"}
                   `}
                 >
-                  <ReviewCard review={r} />
+                  <span className="text-sm sm:text-base drop-shadow">
+                    ▽&nbsp;&nbsp;VER ANTES:
+                  </span>
                 </div>
-              );
-            })}
-          </div>
 
-          <div className="mt-4 flex sm:hidden items-center justify-center gap-2">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                className={`
-                  h-2 rounded-full transition
-                  ${i === activeIndex ? "w-6 bg-logo-100" : "w-2 bg-white/15"}
-                `}
-                aria-label={`Ir a reseña ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+                {/* LABEL (se mueve de arriba a abajo cuando showAfter=true) */}
+                {it.label ? (
+                  <div
+                    className={`
+                      absolute left-3 z-10
+                      rounded-full bg-enfasis-800/55 px-3 py-1
+                      text-xs text-white backdrop-blur
+                      transition-all duration-300
+                      ${showAfter ? "top-auto bottom-3" : "top-3 bottom-auto"}
+                    `}
+                  >
+                    {it.label}
+                  </div>
+                ) : null}
+
+                {/* Imagen */}
+                <div className="relative aspect-[4/5] w-full">
+                  <Image
+                    src={showAfter ? it.after : it.before}
+                    alt={showAfter ? it.altAfter ?? "Después" : it.altBefore ?? "Antes"}
+                    fill
+                    sizes="(max-width: 640px) 280px, 320px"
+                    className="
+                      object-cover
+                      transition-transform duration-500
+                      group-hover:scale-[1.02]
+                    "
+                    priority={false}
+                  />
+                  {/* Viñeteado suave */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-enfasis-800/10 via-transparent to-enfasis-800/45" />
+                </div>
+
+                {/* Barra inferior: VER DESPUÉS (solo cuando showAfter=false) */}
+                <div
+                  className={`
+                    absolute left-0 right-0 bottom-0 z-20
+                    flex items-center justify-center
+                    py-3
+                    bg-logo-100/95 text-white tracking-wide
+                    transition-transform duration-300
+                    ${showAfter ? "translate-y-full" : "translate-y-0"}
+                  `}
+                >
+                  <span className="text-sm sm:text-base drop-shadow">
+                    △&nbsp;&nbsp;VER DESPUÉS:
+                  </span>
+                </div>
+              </button>
+            </article>
+          );
+        })}
       </div>
-    </section>
-  );
-}
 
-
-
-
-
-
-
-
-
-
-import Link from "next/link";
-import Image from "next/image";
-import Logo from "../../../public/logo.svg";
-import rafacliente from "../../../public/InspiracionLandingRafaCliente.webp";
-
-export default function HeroSection() {
-  return (
-    <section className="section flex items-center w-full">
-      <main className="section-inner relative w-full flex flex-col items-center overflow-hidden min-h-screen">
-
-        {/* Fondo */}
-        <Image
-          src={rafacliente}
-          alt="Barber background"
-          fill
-          priority
-          className="object-cover object-center z-0 max-h-screen"
-        />
-
-        {/* Oscurecimiento general (encima de la imagen) */}
-        <div className="absolute inset-0 z-10 bg-enfasis-800/45" />
-
-        {/* Gradiente/vignette (encima del oscurecimiento) */}
-        <div className="h-50 w-full absolute inset-0 z-20 bg-gradient-to-b from-enfasis-800/90 via-60% via-gradientvia-600/20 to-enfasis-800/0" />
-
-        {/* Contenido (por encima de TODO lo anterior) */}
-        <div className="relative z-20 w-full flex flex-col items-center space-y-10">
-          <header className="w-full flex flex-col items-center">
-            <div className="flex items-center relative bottom-9">
-              <Image src={Logo} alt="logo" width={200} />
-            </div>
-
-            <nav className="flex items-center relative bottom-22 space-x-3">
-              <Link href="/cortes" className="type-body text-logo-100">Cortes</Link>
-              <Link href="/cortes" className="type-body text-logo-100">Conoce</Link>
-              <Link href="/contacto" className="type-body text-logo-100">Contacta</Link>
-            </nav>
-          </header>
-
-          <div className="flex-col justify-between items-end h-[400px]">
-            <h3 className="relative type-title-lg text-center bottom-12">
-              EL DETALLE <br /> MARCA LA <br />
-              <span className="text-logo-100">DIFERENCIA</span>
-            </h3>
-
-            <Link href="https://booksy.com/es-es/dl/show-business/168633?utm_medium=c2c_referral" className="relative border-5 border-logo-100 px-6 py-3 type-cta bottom-12">
-              Reservar
-            </Link>
-          </div>
-        </div>
-
-      </main>
-    </section>
+      {/* Hint móvil */}
+      <p className="mt-2 text-center text-xs text-white/50">
+        Desliza para ver más · Toca una tarjeta para alternar Antes/Después
+      </p>
+    </div>
   );
 }

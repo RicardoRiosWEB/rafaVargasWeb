@@ -36,9 +36,9 @@ export default function HeroSection() {
             href="https://booksy.com/es-es/dl/show-business/168633?utm_medium=c2c_referral"
             className="
               absolute left-1/2 bottom-[19vh] -translate-x-1/2
-              border-[5px] border-logo-100 px-6 py-3 type-cta
+              border-5 border-logo-100 px-6 py-3 type-cta
               z-40
-              transition-transform duration-300 ease-out
+              transition-transform duration-250 ease-out
               hover:scale-[1.06] active:scale-[0.98]
               group
             "
@@ -50,7 +50,7 @@ export default function HeroSection() {
                 className="
                   absolute left-0 bottom-0 block h-1 w-full bg-logo-100
                   origin-left scale-x-0
-                  transition-transform duration-300 ease-out
+                  transition-transform duration-250 ease-out
                   [@media(hover:hover)]:group-hover:scale-x-100
                   [@media(hover:none)]:group-active:scale-x-100
                 "

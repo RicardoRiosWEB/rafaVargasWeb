@@ -171,7 +171,7 @@ export default function ReviewsCarousel({
             onPointerUp={resume}
             onPointerCancel={resume}
             className="
-              flex gap-4
+              flex gap-4 
               overflow-x-auto scroll-smooth
               snap-x snap-mandatory
               px-[7vw] sm:px-[10vw]
@@ -193,7 +193,7 @@ export default function ReviewsCarousel({
                     itemRefs.current[idx] = node;
                   }}
                   className={`
-                    snap-center shrink-0
+                    snap-center shrink-0 
                     w-[86%] sm:w-[72%] md:w-[56%] lg:w-[44%]
                     transition-transform duration-300 ease-out
                     ${isActive ? "scale-[1.03]" : "scale-100"}

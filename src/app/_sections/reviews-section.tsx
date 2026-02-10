@@ -41,7 +41,7 @@ function ReviewsSection() {
         </h3>
 
         <div className="relative mb-10 bottom-5">
-          <ReviewsCarousel reviews={reviews} autoPlayMs={4500} />
+          <ReviewsCarousel reviews={reviews} autoPlayMs={3800} />
         </div>
 
         {/* Botón centrado + SVG a distancia 10 */}
@@ -50,7 +50,7 @@ function ReviewsSection() {
             href="https://booksy.com/es-es/dl/show-business/168633?utm_medium=c2c_referral"
             className="
               inline-flex items-center justify-center
-              border-[5px] border-logo-100 px-6 py-3 type-cta
+              border-5 border-logo-100 px-6 py-3 type-cta
               transition-transform duration-300 ease-out
               hover:scale-[1.06] active:scale-[0.98]
               group

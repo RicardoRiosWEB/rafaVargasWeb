@@ -13,7 +13,7 @@ function getDiff(i: number, active: number, n: number) {
 export default function HeroBgCarousel({
   images,
   intervalMs = 4500,
-  durationMs = 900,
+  durationMs = 1200,
 }: {
   images: StaticImageData[];
   intervalMs?: number;
