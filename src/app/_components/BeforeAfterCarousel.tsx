@@ -180,7 +180,7 @@ export default function BeforeAfterFlipCarousel({
                     {/* Barra superior: VER ANTES */}
                     <div className="absolute left-0 right-0 top-0 z-30 flex items-center justify-center py-3 bg-logo-100/95 text-white tracking-wide">
                       <span className="text-sm sm:text-base drop-shadow">
-                        VER ANTES
+                        ▽&nbsp;&nbsp;VER ANTES:
                       </span>
                     </div>
 
