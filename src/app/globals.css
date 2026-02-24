@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  --background: #121214;
+  --foreground: #ededed;
+}
+
+@keyframes spin-accel-stop {
+  0% { transform: rotate(0deg); }
+  12% { transform: rotate(25deg); }
+  24% { transform: rotate(95deg); }
+  36% { transform: rotate(215deg); }
+  48% { transform: rotate(375deg); }
+  60% { transform: rotate(560deg); }
+  72% { transform: rotate(720deg); }
+  100% { transform: rotate(720deg); }
+}
+
+.animate-spin-accel-stop {
+  animation: spin-accel-stop 2.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-accel-stop { animation: none; }
+}
+
+@theme {
+  /* Colores */
+  --color-logo-100: #D8A088;
+  --color-enfasis-800: #0B0B0C;
+  --color-gradientvia-600: #934B18;
+  --color-fondo-500: #2A2A2E;
+
+  /* Sombras */
+  --shadow-card: 0 14px 40px -22px color-mix(in oklab, var(--color-enfasis-800) 65%, transparent);
+  --shadow-float: 0 22px 70px -40px color-mix(in oklab, var(--color-enfasis-800) 75%, transparent);
+  --shadow-soft: 0 8px 18px -12px color-mix(in oklab, var(--color-enfasis-800) 55%, transparent);
+
+  /* ✅ Stacks (NO redefinir --font-title; lo inyecta next/font) */
+  --font-title-stack: var(--font-title), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+
+  --font-sans-stack: var(--font-title), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+
+  --font-mono-stack: var(--font-title), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* tamaños semánticos */
+  --tama-h11: 2.5rem;
+  --tama-h2: 2.25rem;
+  --tama-cta: 1.75rem;
+  --tama-p20: 1.25rem;
+  --tama-small: 1rem;
+  --tama-xsmall: 0.875rem;
+
+  /* pesos y métricas */
+  --weight-title: 700;
+  --weight-body: 400;
+  --leading-compress: 1;
+  --leading-tight: 1.15;
+  --leading-normal: 1.5;
+  --track-tight: -0.02em;
+  --track-normal: 0;
+}
+video::-webkit-media-controls-playback-rate-button { display: none !important; }
+video::-webkit-media-controls-download-button { display: none !important; }
+/* tokens base */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Utilities tipográficas */
+@utility type-body {
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-small);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--track-normal);
+}
+
+@utility type-title-lg {
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-h11);
+  font-weight: 500;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--track-tight);
+}
+
+@utility type-title-md {
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-h2);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--track-tight);
+}
+
+@utility type-cta {
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-cta);
+  font-weight: 300;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--track-tight);
+}
+
+@utility type-label {
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-xsmall);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* base */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-title-stack);
+  font-size: var(--tama-small);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--track-normal);
+}
