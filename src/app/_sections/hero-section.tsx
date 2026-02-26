@@ -30,7 +30,7 @@ export default function HeroSection() {
           {/* H1 para SEO (si es el hero principal de la home) */}
           <h1
             id="hero-title"
-            className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2 type-title-lg text-center md:text-5xl"
+            className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2 type-title-lg text-center md:text-5xl lg:text-6xl"
           >
             EL DETALLE <br /> MARCA LA <br />
             <span className="text-logo-100">DIFERENCIA</span>
