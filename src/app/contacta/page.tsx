@@ -86,21 +86,29 @@ export default function ContactaPage() {
             Contacto
           </h1>
 
-          <div>
-            <h2 className="font-title text-xl font-medium mb-3 uppercase">Horarios</h2>
-            <div className="font-title">
-              <p>
-                Entre semana:
-                <br />
-                <time dateTime="09:30">9:30</time> a <time dateTime="18:30">18:30</time>
-              </p>
-              <p className="mt-3">
-                Sábados:
-                <br />
-                <time dateTime="10:30">10:30</time> a <time dateTime="14:30">14:30</time>
-              </p>
-            </div>
+        <div>
+          <h3 className="font-title text-xl font-medium mb-4 uppercase">
+            Horarios
+          </h3>
+
+          <div className="font-title">
+            <p>
+              Entre semana:
+              <br />
+              <time dateTime="09:30">9:30</time> a <time dateTime="14:00">14:00</time>
+              <br />
+              <time dateTime="15:00">15:00</time> a <time dateTime="20:00">20:00</time>
+            </p>
+
+            <br />
+
+            <p>
+              Sábados:
+              <br />
+              <time dateTime="09:30">9:30</time> a <time dateTime="14:00">14:00</time>
+            </p>
           </div>
+        </div>
 
           <Divider />
 

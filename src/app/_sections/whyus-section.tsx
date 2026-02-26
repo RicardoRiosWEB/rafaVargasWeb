@@ -13,9 +13,11 @@ export default function WhyUsSection() {
       <div className="section-inner w-full max-w-3xl px-5 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         {/* Separador superior (decorativo) */}
         <div className="w-full flex justify-center mb-6 sm:mb-8">
+
           <svg
-            className="w-full max-w-[720px] h-6"
+            className="block md:mt-4 h-[24px] w-[240px] sm:w-[380px] md:w-[520px] lg:w-[700px]"
             viewBox="0 0 220 24"
+            preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
             focusable="false"
@@ -28,9 +30,9 @@ export default function WhyUsSection() {
         </div>
 
         {/* Título */}
-        <h2 id="whyus-title" className="type-title-md md:py-3 md:text-4xl">
+        <h2 id="whyus-title" className="type-title-md md:py-3 md:text-5xl">
           ALTA BARBERÍA <br />
-          <span className="type-title-lg text-logo-100">RAFA VARGAS</span>
+          <span className="type-title-lg text-logo-100 md:text-5xl">RAFA VARGAS</span>
         </h2>
 
         {/* Texto */}
@@ -79,9 +81,11 @@ export default function WhyUsSection() {
 
         {/* Separador inferior (decorativo) */}
         <div className="w-full flex justify-center mt-6 sm:mt-8 md:py-3">
+
           <svg
-            className="w-full max-w-[720px] h-6"
+            className="block md:mt-4 h-[24px] w-[240px] sm:w-[380px] md:w-[520px] lg:w-[700px]"
             viewBox="0 0 220 24"
+            preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
             focusable="false"

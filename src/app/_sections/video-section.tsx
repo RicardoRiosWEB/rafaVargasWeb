@@ -35,19 +35,19 @@ const videos: VideoItem[] = [
     <section className="section w-full py-12 md:pt-16" aria-labelledby="video-title">
       <div className="section-inner">
         <header className="text-center mb-7 md:mb-10">
-          <h2 id="video-title" className="type-title-lg tracking-wide px-4 md:text-4xl">
+          <h2 id="video-title" className="type-title-md tracking-wide px-4 md:text-5xl">
             {/* < 380px: 3 líneas exactas */}
             <span className="hidden max-[379px]:block">
               EL DETALLE <br />
               LO HACE <br />
-              <span className="text-logo-100 type-title-lg">IMPECABLE</span>
+              <span className="text-logo-100 type-title-lg md:text-5xl">IMPECABLE</span>
             </span>
 
             {/* >= 380px: tu versión original */}
             <span className="block max-[379px]:hidden">
               EL DETALLE LO
               <br />
-              HACE <span className="text-logo-100 type-title-lg">IMPECABLE</span>
+              HACE <span className="text-logo-100 type-title-lg md:text-5xl">IMPECABLE</span>
             </span>
           </h2>
         </header>

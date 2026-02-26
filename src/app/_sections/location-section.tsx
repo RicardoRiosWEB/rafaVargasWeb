@@ -11,15 +11,15 @@ function LocationSection() {
     >
       <div className="section-inner space-y-3">
         {/* Mejor jerarquía: h2 (o h3 si ya tienes h1/h2 arriba) */}
-        <h2 id="location-title" className="type-title-md text-center mb-6 mt-2">
+        <h2 id="location-title" className="type-title-md text-center mb-6 mt-2 md:text-5xl md:pb-4">
           ENTRA FÁCIL<br /> SAL
-          <span className="text-logo-100 type-title-lg"> IMPECABLE</span>
+          <span className="text-logo-100 type-title-lg md:text-5xl"> IMPECABLE</span>
         </h2>
 
         <div className="flex justify-center">
           <div className="w-full">
             <Link
-              href="https://maps.app.goo.gl/gRUcuB8DKjTZ1GH68"
+              href="https://maps.app.goo.gl/zFpFP9i6wyvZrp9j9?g_st=aw"
               aria-label="Abrir ubicación de Rafa Vargas Barber en Google Maps"
               target="_blank"
               rel="noopener noreferrer"
@@ -50,28 +50,25 @@ function LocationSection() {
 
               {/* Contenido */}
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">
-                <p className="relative top-2 font-title text-xl font-medium text-white/90 tracking-wide text-shadow-stone-700">
+                <p className="relative top-2 font-title text-2xl font-medium text-white/90 tracking-wide text-shadow-stone-700">
                   VER UBICACIÓN
                 </p>
 
-                <svg
-                  className="w-[220px] max-w-[80%] h-auto mb-6"
-                  viewBox="0 0 220 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M 8 12 L 26 10.7 L 194 10.7 L 212 12 L 194 13.3 L 26 13.3 Z"
-                    fill="#D8A088"
-                  />
-                </svg>
-
-                {/* Address semántico (SEO local) */}
-                <address className="not-italic font-title text-center text-sm sm:text-base text-white/90 leading-snug">
-                  Pl. los Pinos 2, Puerta 4 AB<br />
-                  Alisal, Santander
-                </address>
+                <div className="w-full flex justify-center py-2">
+                  <svg
+                    className="block h-[24px] w-[240px] sm:w-[320px]  max-w-[80%]"
+                    viewBox="0 0 220 24"
+                    preserveAspectRatio="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M 8 12 L 26 10.7 L 194 10.7 L 212 12 L 194 13.3 L 26 13.3 Z"
+                      fill="#D8A088"
+                    />
+                  </svg>
+                </div>
               </div>
             </Link>
           </div>

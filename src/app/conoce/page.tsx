@@ -87,9 +87,9 @@ export default function ConocePage() {
       </header>
 
       {/* H1 único */}
-      <h1 className="type-title-md m-6 md:m-8 text-center">
+      <h1 className="type-title-md m-6 md:m-8 text-center md:text-5xl">
         YO SOY <br />
-        <span className="type-title-lg text-logo-100">RAFA VARGAS</span>
+        <span className="type-title-lg text-logo-100 md:text-5xl">RAFA VARGAS</span>
       </h1>
 
       <Image
@@ -118,7 +118,7 @@ export default function ConocePage() {
       </article>
 
       <section aria-labelledby="team-title">
-        <h2 id="team-title" className="type-title-md m-6 md:m-8 text-center">
+        <h2 id="team-title" className="type-title-md m-6 md:m-8 text-center md:text-5xl">
           EL EQUIPO
         </h2>
 
@@ -130,7 +130,7 @@ export default function ConocePage() {
           className={imgClass}
         />
 
-        <h3 className="type-title-md m-6 md:m-8 text-center">
+        <h3 className="type-title-md m-6 md:m-8 text-center ">
           SIEMPRE LA
           <br />
           <span className="type-title-lg text-logo-100 font-normal">MEJOR ATENCIÓN</span>

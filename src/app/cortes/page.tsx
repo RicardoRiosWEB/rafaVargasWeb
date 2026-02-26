@@ -133,10 +133,10 @@ export default function CortesPage() {
         <div className="section-inner space-y-6">
           <header className="text-center space-y-2">
             {/* H1 único en la página */}
-            <h1 id="cortes-title" className="type-title-md text-center mb-6 mt-2 md:mb-10">
+            <h1 id="cortes-title" className="type-title-md text-center mb-6 mt-2 md:mb-10 md:text-5xl">
               ESTO NO ES FILTRO:
               <br />
-              <span className="text-logo-100 type-title-lg">ES EL CORTE</span>
+              <span className="text-logo-100 type-title-lg md:text-5xl">ES EL CORTE</span>
             </h1>
           </header>
 
@@ -144,7 +144,7 @@ export default function CortesPage() {
 
           {/* Servicios especiales */}
           <section aria-labelledby="especiales-title">
-            <h2 id="especiales-title" className="type-title-md text-center mb-12 mt-16">
+            <h2 id="especiales-title" className="type-title-md text-center mb-10 mt-16 md:mt-20 md:text-5xl">
               SERVICIOS ESPECIALES
             </h2>
 

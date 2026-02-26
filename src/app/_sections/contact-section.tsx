@@ -14,8 +14,8 @@ const Divider = () => (
       fill="currentColor"
     />
   </svg>
+  
 );
-
 function ContactSection() {
   return (
     <section
